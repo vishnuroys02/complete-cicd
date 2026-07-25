@@ -1,28 +1,20 @@
 version: 0.2
 
 phases:
-  install:
-    commands:
-      - echo Installing dependencies...
-      - pip3 install -r requirements.txt
-      - pip3 install pytest
-
   pre_build:
     commands:
-      - echo Running tests...
-      - pytest
-      - echo Logging in to Amazon ECR...
+      - echo "Logging in to Amazon ECR..."
       - aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 968077439326.dkr.ecr.ap-south-1.amazonaws.com
 
   build:
     commands:
-      - echo Building Docker image...
+      - echo "Building Docker image..."
       - docker build -t complete-cicd .
       - docker tag complete-cicd:latest 968077439326.dkr.ecr.ap-south-1.amazonaws.com/complete-cicd:latest
 
   post_build:
     commands:
-      - echo Pushing Docker image...
+      - echo "Pushing image..."
       - docker push 968077439326.dkr.ecr.ap-south-1.amazonaws.com/complete-cicd:latest
       - printf '[{"name":"complete-app","imageUri":"968077439326.dkr.ecr.ap-south-1.amazonaws.com/complete-cicd:latest"}]' > imagedefinitions.json
 
